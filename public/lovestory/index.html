@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" data-lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ffffff">
+  <title>Love Story · Thiên Ân</title>
+  <meta name="description" content="Kể cho Thiên Ân nghe câu chuyện tình yêu của hai bạn.">
+  <meta property="og:title" content="Love Story · Thiên Ân">
+  <meta property="og:description" content="Kể cho Thiên Ân nghe câu chuyện tình yêu của hai bạn — Tell me your love story.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Montserrat:wght@400;500;600&family=Inter:wght@300;400;500&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <span class="wordmark">Thiên Ân</span>
+      <div class="lang" role="group" aria-label="Ngôn ngữ / Language">
+        <button type="button" data-set-lang="vi">VI</button>
+        <button type="button" data-set-lang="en">EN</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  </header>
+
+  <div id="demoBanner" class="demo-banner" hidden></div>
+
+  <main id="app" class="app" aria-live="polite">
+    <div class="loading"><span></span></div>
+  </main>
+
+  <footer id="nav" class="nav" hidden>
+    <div class="nav__inner">
+      <button type="button" id="backBtn" class="btn btn--ghost"></button>
+      <span id="saveState" class="save-state"></span>
+      <button type="button" id="nextBtn" class="btn btn--solid"></button>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

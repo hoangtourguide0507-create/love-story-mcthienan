@@ -1,0 +1,379 @@
+{
+  "version": 2,
+  "retentionMonths": 6,
+  "intro": {
+    "kicker": { "vi": "Love Story", "en": "Love Story" },
+    "title": {
+      "vi": "Kể cho Thiên Ân nghe *câu chuyện tình yêu* của hai bạn",
+      "en": "Tell Thiên Ân *your love story*"
+    },
+    "greeting": {
+      "vi": "Chào {self}, mình là Thiên Ân — người sẽ đồng hành cùng hai bạn trong ngày trọng đại.",
+      "en": "Hi {self}, I'm Thiên Ân — your MC for the big day."
+    },
+    "body": {
+      "vi": "Mỗi câu chuyện tình yêu đều có những chi tiết chỉ hai người mới biết. Những điều bạn chia sẻ ở đây sẽ giúp mình kể lại câu chuyện của hai bạn trên sân khấu một cách chân thật và đúng cảm xúc nhất.",
+      "en": "Every love story has details only the two of you know. What you share here helps me tell your story on stage in a way that feels true to you."
+    },
+    "points": [
+      {
+        "vi": "Mỗi bạn có một link riêng. {partner} sẽ không đọc được câu trả lời của bạn.",
+        "en": "You each have your own link, and {partner} won't see your answers."
+      },
+      {
+        "vi": "Mất khoảng 20–25 phút. Câu trả lời được tự động lưu, bạn có thể dừng lại và quay lại điền tiếp bất cứ lúc nào.",
+        "en": "It takes about 20–25 minutes. Your answers save automatically, so you can stop and come back anytime."
+      },
+      {
+        "vi": "Câu nào chưa nghĩ ra, bạn cứ bỏ qua. Kể càng chi tiết, câu chuyện trên sân khấu càng có hồn.",
+        "en": "Feel free to skip anything you're unsure about. The more you share, the more alive your story will feel on stage."
+      },
+      {
+        "vi": "Thông tin chỉ dùng để viết kịch bản cho đám cưới của hai bạn và sẽ được xoá sau 6 tháng kể từ ngày cưới.",
+        "en": "Your answers are used only to write the script for your wedding and will be deleted 6 months after the big day."
+      }
+    ],
+    "button": { "vi": "Bắt đầu kể", "en": "Let's begin" },
+    "resume": { "vi": "Tiếp tục kể", "en": "Continue" }
+  },
+  "sections": [
+    {
+      "id": "about",
+      "title": { "vi": "Về bạn", "en": "About you" },
+      "questions": [
+        {
+          "id": "q1_1", "num": "1.1", "type": "short", "required": true,
+          "label": { "vi": "Họ và tên đầy đủ của bạn", "en": "Your full name" }
+        },
+        {
+          "id": "q1_2", "num": "1.2", "type": "short",
+          "label": { "vi": "Mọi người thường gọi bạn là gì?", "en": "What do people usually call you?" },
+          "hint": { "vi": "Tên thân mật, biệt danh…", "en": "Nickname, a name friends use…" }
+        },
+        {
+          "id": "q1_3", "num": "1.3", "type": "short",
+          "label": {
+            "vi": "Tên của bạn có cách đọc riêng, hoặc tên tiếng Anh mà khách nước ngoài quen gọi không?",
+            "en": "Is there a particular way to pronounce your name, or an English name your international guests know you by?"
+          }
+        },
+        {
+          "id": "q1_4", "num": "1.4", "type": "short",
+          "label": { "vi": "Họ tên bố của bạn", "en": "Your father's full name" },
+          "note": { "vi": "MC có thể xướng danh trong nghi lễ.", "en": "The MC may introduce your parents during the ceremony." }
+        },
+        {
+          "id": "q1_5", "num": "1.5", "type": "short",
+          "label": { "vi": "Họ tên mẹ của bạn", "en": "Your mother's full name" }
+        },
+        {
+          "id": "q1_6", "num": "1.6", "type": "long",
+          "label": {
+            "vi": "Có lưu ý nào về gia đình mà MC cần biết khi giới thiệu không?",
+            "en": "Is there anything about your family the MC should know when introducing them?"
+          },
+          "hint": {
+            "vi": "Bố mẹ có phát biểu không, ông bà có lên sân khấu không, người thân nào không thể đến dự…",
+            "en": "Will your parents give a speech? Will grandparents come on stage? Is anyone unable to attend?…"
+          }
+        },
+        {
+          "id": "q1_7", "num": "1.7", "type": "date", "required": true, "prefill": "weddingDate",
+          "label": { "vi": "Xác nhận ngày cưới", "en": "Please confirm your wedding date" }
+        },
+        {
+          "id": "q1_8", "num": "1.8", "type": "short", "prefill": "venue",
+          "label": { "vi": "Địa điểm tổ chức", "en": "Venue" }
+        }
+      ]
+    },
+    {
+      "id": "beginning",
+      "title": { "vi": "Ngày đầu tiên", "en": "Where it all began" },
+      "questions": [
+        {
+          "id": "q2_1", "num": "2.1", "type": "month",
+          "label": { "vi": "Hai bạn quen nhau từ khi nào?", "en": "When did you two first meet?" },
+          "note": { "vi": "Tháng và năm là đủ.", "en": "Month and year is enough." }
+        },
+        {
+          "id": "q2_2", "num": "2.2", "type": "long",
+          "label": { "vi": "Lần đầu tiên hai bạn gặp nhau như thế nào?", "en": "How did you two first meet?" },
+          "hint": {
+            "vi": "Ở đâu, trong hoàn cảnh nào, ai giới thiệu, ấn tượng đầu tiên ra sao…",
+            "en": "Where, how, who introduced you, what was your first impression…"
+          }
+        },
+        {
+          "id": "q2_3", "num": "2.3", "type": "long",
+          "label": { "vi": "Điều gì ở {partner} thu hút bạn ngay từ đầu?", "en": "What first drew you to {partner}?" }
+        },
+        {
+          "id": "q2_4", "num": "2.4", "type": "long",
+          "label": { "vi": "Bạn nhận ra mình đã yêu {partner} từ khi nào?", "en": "When did you realise you were in love with {partner}?" }
+        },
+        {
+          "id": "q2_5", "num": "2.5", "type": "long",
+          "label": {
+            "vi": "Khoảnh khắc nào khiến bạn biết {partner} chính là người bạn muốn đi cùng cả đời?",
+            "en": "What was the moment you knew {partner} was the person you wanted to spend your life with?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dating",
+      "title": { "vi": "Hẹn hò", "en": "Falling in love" },
+      "questions": [
+        {
+          "id": "q3_1", "num": "3.1", "type": "long",
+          "label": {
+            "vi": "Buổi hẹn đầu tiên diễn ra như thế nào? Ai là người chủ động rủ trước?",
+            "en": "Tell me about your first date. Who asked whom?"
+          }
+        },
+        {
+          "id": "q3_2", "num": "3.2", "type": "short",
+          "label": {
+            "vi": "Hai bạn xưng hô với nhau thế nào? Có biệt danh riêng không?",
+            "en": "What do you call each other? Any pet names?"
+          }
+        },
+        {
+          "id": "q3_3", "num": "3.3", "type": "long",
+          "label": {
+            "vi": "Những sở thích hay hoạt động chung nào khiến hai bạn gần nhau hơn?",
+            "en": "What shared hobbies or activities brought you closer?"
+          }
+        },
+        {
+          "id": "q3_4", "num": "3.4", "type": "long",
+          "label": {
+            "vi": "Ai là người hay tạo bất ngờ hơn? Kể một bất ngờ bạn nhớ nhất.",
+            "en": "Who plans more of the surprises? Tell me about one you'll never forget."
+          }
+        },
+        {
+          "id": "q3_5", "num": "3.5", "type": "long",
+          "label": {
+            "vi": "Kỷ niệm đáng nhớ nhất từ một chuyến đi hoặc dịp lễ cùng nhau?",
+            "en": "What's your most memorable trip or holiday together?"
+          }
+        },
+        {
+          "id": "q3_6", "num": "3.6", "type": "long",
+          "label": {
+            "vi": "Một thói quen dễ thương hoặc buồn cười của {partner} mà bạn biết rõ nhất?",
+            "en": "What's a sweet or funny habit of {partner}'s that you know best?"
+          },
+          "note": {
+            "vi": "Chi tiết này giúp MC tạo tiếng cười nhẹ nhàng.",
+            "en": "Little details like this help the MC add a gentle laugh."
+          }
+        },
+        {
+          "id": "q3_7", "num": "3.7", "type": "long",
+          "label": {
+            "vi": "Có câu chuyện hay câu nói nào mà chỉ hai bạn mới hiểu không?",
+            "en": "Any inside jokes or stories only the two of you get?"
+          }
+        },
+        {
+          "id": "q3_8", "num": "3.8", "type": "long",
+          "label": {
+            "vi": "Hai bạn đã cùng nhau vượt qua thử thách nào chưa?",
+            "en": "Have you been through a challenge together?"
+          },
+          "hint": { "vi": "Yêu xa, khác biệt…", "en": "Long distance, differences…" },
+          "note": {
+            "vi": "Chỉ kể nếu bạn thoải mái để MC nhắc tới.",
+            "en": "Only share this if you're comfortable with the MC mentioning it."
+          }
+        }
+      ]
+    },
+    {
+      "id": "proposal",
+      "title": { "vi": "Lời cầu hôn", "en": "The proposal" },
+      "questions": [
+        {
+          "id": "q4_1", "num": "4.1", "type": "single",
+          "label": { "vi": "Đã có màn cầu hôn chưa?", "en": "Has there been a proposal?" },
+          "options": [
+            { "value": "yes", "vi": "Có rồi", "en": "Yes" },
+            { "value": "no", "vi": "Chưa có, hoặc hai bạn không có màn cầu hôn", "en": "Not yet, or we didn't have one" }
+          ]
+        },
+        {
+          "id": "q4_2", "num": "4.2", "type": "long", "showIf": { "q": "q4_1", "in": ["yes"] },
+          "label": { "vi": "Ai cầu hôn và màn cầu hôn diễn ra như thế nào?", "en": "Who proposed, and how did it happen?" }
+        },
+        {
+          "id": "q4_3", "num": "4.3", "type": "long", "showIf": { "q": "q4_1", "in": ["yes"] },
+          "label": { "vi": "Cảm xúc của bạn ngay lúc đó?", "en": "How did you feel in that moment?" }
+        },
+        {
+          "id": "q4_4", "num": "4.4", "type": "short", "showIf": { "q": "q4_1", "in": ["yes"] },
+          "label": { "vi": "Có ai chứng kiến khoảnh khắc ấy không?", "en": "Was anyone there to witness it?" }
+        },
+        {
+          "id": "q4_6", "num": "4.2", "type": "long", "showIf": { "q": "q4_1", "in": ["no"] },
+          "label": {
+            "vi": "Quyết định về chung một nhà đã đến với hai bạn như thế nào?",
+            "en": "How did you two decide to get married?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wedding",
+      "title": { "vi": "Đám cưới của hai bạn", "en": "Your wedding" },
+      "questions": [
+        {
+          "id": "q5_1", "num": "5.1", "type": "long",
+          "label": {
+            "vi": "Hai bạn muốn đám cưới truyền tải thông điệp gì về tình yêu của mình?",
+            "en": "What message about your love do you want your wedding to share?"
+          }
+        },
+        {
+          "id": "q5_2", "num": "5.2", "type": "long",
+          "label": {
+            "vi": "Có yếu tố văn hoá, truyền thống hoặc chi tiết riêng nào bạn muốn lồng ghép không?",
+            "en": "Any cultural elements, traditions or personal touches you'd like to include?"
+          }
+        },
+        {
+          "id": "q5_3", "num": "5.3", "type": "long",
+          "label": {
+            "vi": "Bài hát, câu nói hoặc hình ảnh nào đại diện cho câu chuyện tình yêu của hai bạn?",
+            "en": "What song, quote or image best represents your love story?"
+          }
+        },
+        {
+          "id": "q5_4", "num": "5.4", "type": "multi",
+          "label": {
+            "vi": "Bạn mong phần love story mang không khí nào?",
+            "en": "What mood would you like for your love story moment?"
+          },
+          "note": { "vi": "Chọn được nhiều đáp án.", "en": "Choose as many as you like." },
+          "options": [
+            { "value": "warm", "vi": "Ấm áp, xúc động", "en": "Warm and heartfelt" },
+            { "value": "fun", "vi": "Vui nhộn, hài hước", "en": "Fun and playful" },
+            { "value": "romantic", "vi": "Lãng mạn", "en": "Romantic" },
+            { "value": "elegant", "vi": "Trang trọng, sang trọng", "en": "Elegant and formal" }
+          ]
+        },
+        {
+          "id": "q5_5", "num": "5.5", "type": "single",
+          "label": {
+            "vi": "Khách mời của hai bạn chủ yếu dùng ngôn ngữ nào?",
+            "en": "What language do most of your guests speak?"
+          },
+          "options": [
+            { "value": "vi", "vi": "Chủ yếu tiếng Việt", "en": "Mostly Vietnamese" },
+            { "value": "en", "vi": "Chủ yếu tiếng Anh", "en": "Mostly English" },
+            { "value": "both", "vi": "Cả hai (song ngữ)", "en": "Both (bilingual)" }
+          ]
+        },
+        {
+          "id": "q5_6", "num": "5.6", "type": "long", "private": true,
+          "label": {
+            "vi": "Có điều gì bạn không muốn MC nhắc tới không?",
+            "en": "Is there anything you'd prefer the MC not to mention?"
+          },
+          "hint": {
+            "vi": "Chuyện cũ, chủ đề gia đình nhạy cảm, tên một người nào đó, chi tiết riêng tư…",
+            "en": "Past relationships, sensitive family topics, someone's name, private details…"
+          }
+        }
+      ]
+    },
+    {
+      "id": "future",
+      "title": { "vi": "Tương lai và lời hứa", "en": "Your future" },
+      "questions": [
+        {
+          "id": "q6_1", "num": "6.1", "type": "long",
+          "label": {
+            "vi": "Hai bạn hình dung cuộc sống sau khi cưới sẽ như thế nào?",
+            "en": "How do you picture your life together after the wedding?"
+          }
+        },
+        {
+          "id": "q6_2", "num": "6.2", "type": "long",
+          "label": {
+            "vi": "Mục tiêu lớn nhất hai bạn muốn cùng đạt được trong 5–10 năm tới?",
+            "en": "What's the biggest goal you want to reach together in the next 5–10 years?"
+          }
+        },
+        {
+          "id": "q6_3", "num": "6.3", "type": "list", "count": 3,
+          "label": { "vi": "3 điều bạn muốn hứa với {partner}", "en": "Three promises you'd like to make to {partner}" },
+          "itemLabel": { "vi": "Lời hứa", "en": "Promise" },
+          "note": {
+            "vi": "Lời hứa có thể được dùng trong nghi thức \"I Do\" mang dấu ấn riêng của hai bạn.",
+            "en": "These may be used in a personalised \"I Do\" moment."
+          }
+        }
+      ]
+    },
+    {
+      "id": "secret",
+      "title": { "vi": "Lời nhắn bí mật", "en": "A secret note" },
+      "intro": {
+        "vi": "Đây là khoảng riêng của bạn. Hãy viết cho {partner} những điều bạn muốn nói mà có thể chưa từng nói. {partner} sẽ không đọc được ở đây.",
+        "en": "This space is just for you. Write the things you've always wanted to tell {partner}. They won't see it here."
+      },
+      "questions": [
+        {
+          "id": "q7_1", "num": "7.1", "type": "long", "private": true, "tall": true,
+          "label": { "vi": "Lời nhắn của bạn", "en": "Your note" }
+        },
+        {
+          "id": "q7_2", "num": "7.2", "type": "single", "private": true,
+          "label": { "vi": "Mình có thể dùng lời nhắn này như thế nào?", "en": "How may I use your note?" },
+          "options": [
+            { "value": "read", "vi": "MC được đọc bất ngờ trong lễ cưới", "en": "You may read it as a surprise at the wedding" },
+            { "value": "reference", "vi": "Chỉ để MC tham khảo khi viết kịch bản", "en": "Use it only as inspiration for the script" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "closing",
+      "title": { "vi": "Lời cuối", "en": "Before you go" },
+      "questions": [
+        {
+          "id": "q8_1", "num": "8.1", "type": "long",
+          "label": { "vi": "Còn điều gì bạn muốn kể thêm với mình không?", "en": "Anything else you'd like to tell me?" }
+        },
+        {
+          "id": "q8_2", "num": "8.2", "type": "url",
+          "label": {
+            "vi": "Link album ảnh của hai bạn, nếu muốn chia sẻ",
+            "en": "A link to your photo album, if you'd like to share"
+          },
+          "hint": { "vi": "Google Drive, Google Photos…", "en": "Google Drive, Google Photos…" }
+        }
+      ]
+    }
+  ],
+  "review": {
+    "title": { "vi": "Xem lại câu trả lời", "en": "Review your answers" },
+    "body": {
+      "vi": "Bạn đọc lại một lượt, chỗ nào muốn sửa thì bấm \"Sửa\". Sau khi gửi, bạn vẫn mở lại link này để chỉnh sửa được.",
+      "en": "Take a moment to read through. Tap \"Edit\" to change anything. You can still reopen this link to make changes after sending."
+    },
+    "button": { "vi": "Gửi cho Thiên Ân", "en": "Send to Thiên Ân" }
+  },
+  "thanks": {
+    "title": { "vi": "Cảm ơn {self}", "en": "Thank you, {self}" },
+    "body": {
+      "vi": "Cảm ơn bạn đã tin tưởng kể cho mình nghe câu chuyện của hai bạn. Mình sẽ giữ gìn từng chi tiết, và hẹn gặp hai bạn trong ngày trọng đại.",
+      "en": "Thank you for trusting me with your story. I'll treasure every detail — see you on the big day."
+    },
+    "signature": "Thiên Ân",
+    "edit": { "vi": "Chỉnh sửa câu trả lời", "en": "Edit my answers" }
+  }
+}
