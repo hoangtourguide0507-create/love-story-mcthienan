@@ -1,5 +1,7 @@
 [build]
   publish = "public"
+  # Chỉ deploy (tốn credit) khi trang web thay đổi; sửa Apps Script hay tài liệu thì bỏ qua
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- public/ netlify.toml"
 
 [[redirects]]
   from = "/"

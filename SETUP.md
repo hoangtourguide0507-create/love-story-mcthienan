@@ -107,4 +107,4 @@ Khi `apiUrl` trong `config.js` còn để trống, trang chạy ở chế độ 
 
 ## Dạng link mời
 
-Mỗi người có một link riêng dạng `https://mc-thien-an.netlify.app/lovestory/lan-anh-k7q2m9xp`. Phần đầu là tên người nhận viết không dấu, phần cuối là 8 ký tự ngẫu nhiên để người ngoài không đoán được. Link dạng cũ `…/lovestory/?k=…` vẫn mở được bình thường.
+Mỗi người có một link riêng dạng `https://mc-thien-an.netlify.app/lovestory/lan-anh-k7q2m9`. Phần đầu là tên người nhận viết không dấu, phần cuối là 6 ký tự ngẫu nhiên để người ngoài không đoán được. Nếu có ai thử dò link (hơn 200 lần mở link sai trong 10 phút), Apps Script tạm khoá việc mở link trong 10 phút. Link dạng cũ `…/lovestory/?k=…` vẫn mở được bình thường.

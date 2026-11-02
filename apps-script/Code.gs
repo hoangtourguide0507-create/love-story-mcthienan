@@ -18,6 +18,8 @@ var RESPONSE_HEADERS = ['key', 'code', 'role', 'status', 'lang', 'updatedAt', 's
 var RETENTION_MONTHS = 6;
 var MAX_ANSWER_CHARS = 10000;
 var MAX_TOTAL_CHARS = 45000; // giới hạn 1 ô Google Sheet là 50.000 ký tự
+var KEY_RANDOM_CHARS = 6;
+var BAD_LINK_LIMIT = 200; // quá 200 lượt mở link sai trong 10 phút → tạm khoá 10 phút để chống dò link
 var STATUS_RANK = { '': 0, 'new': 0, 'opened': 1, 'draft': 2, 'submitted': 3 };
 
 /* ============================================================
@@ -359,6 +361,15 @@ function readCouples_() {
 
 function findByKey_(k) {
   k = String(k || '');
+  var cache = CacheService.getScriptCache();
+  var bad = Number(cache.get('badLinks') || 0);
+  if (bad >= BAD_LINK_LIMIT) throw new Error('rate_limited');
+  var found = lookupKey_(k);
+  if (!found) cache.put('badLinks', String(bad + 1), 600);
+  return found;
+}
+
+function lookupKey_(k) {
   if (!/^[a-z0-9-]{8,40}$/.test(k)) return null;
   var couples = readCouples_();
   for (var i = 0; i < couples.length; i++) {
@@ -418,12 +429,12 @@ function slug_(s) {
   return t || 'x';
 }
 
-// Mã link riêng của từng người: tên không dấu + 8 ký tự ngẫu nhiên, ví dụ "lan-anh-k7q2m9xp"
+// Mã link riêng của từng người: tên không dấu + 6 ký tự ngẫu nhiên, ví dụ "lan-anh-k7q2m9"
 function personKey_(name) {
   var base = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, '');
-  return (base ? base + '-' : '') + randomId_(8);
+  return (base || 'ban') + '-' + randomId_(KEY_RANDOM_CHARS);
 }
 
 function randomId_(len) {
