@@ -39,7 +39,7 @@
     function save(db) { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
     function rid(n) { var c = 'abcdefghijkmnpqrstuvwxyz23456789', s = ''; for (var i = 0; i < n; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
     function slug(s) { return (String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 12)) || 'x'; }
-    function pkey(n) { var b = String(n).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, ''); return (b || 'ban') + '-' + rid(6); }
+    function pkey(n) { var b = String(n).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, ''); return b || 'ban'; }
     function purge(date) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || ''); if (!m) return ''; return new Date(Date.UTC(+m[1], +m[2] - 1 + 6, +m[3])).toISOString().slice(0, 10); }
     function pub(c) { var o = JSON.parse(JSON.stringify(c)); o.purgeDate = purge(c.weddingDate); return o; }
     function byKey(db, k) {
@@ -96,8 +96,15 @@
           var nc = {
             code: slug(d.brideName) + '-' + slug(d.groomName) + '-' + rid(4), brideName: d.brideName.trim(), groomName: d.groomName.trim(),
             weddingDate: d.weddingDate, venue: (d.venue || '').trim(), note: (d.note || '').trim(),
-            brideKey: pkey(d.brideName), groomKey: pkey(d.groomName), brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
+            brideKey: '', groomKey: '', brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
           };
+          var used = { admin: 1 }; db.couples.forEach(function (c) { used[c.brideKey] = 1; used[c.groomKey] = 1; });
+          var sb = pkey(d.brideName), sg = pkey(d.groomName);
+          for (var n = 1; n < 1000; n++) {
+            var sf = n === 1 ? '' : '-' + n, kb = sb + '-' + sg + sf, kg = sg + '-' + sb + sf;
+            if (kb === kg) kg += '-2';
+            if (!used[kb] && !used[kg]) { nc.brideKey = kb; nc.groomKey = kg; break; }
+          }
           db.couples.push(nc); save(db);
           return { ok: true, couple: pub(nc) };
         case 'adminUpdate':

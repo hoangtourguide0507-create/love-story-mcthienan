@@ -18,8 +18,6 @@ var RESPONSE_HEADERS = ['key', 'code', 'role', 'status', 'lang', 'updatedAt', 's
 var RETENTION_MONTHS = 6;
 var MAX_ANSWER_CHARS = 10000;
 var MAX_TOTAL_CHARS = 45000; // giới hạn 1 ô Google Sheet là 50.000 ký tự
-var KEY_RANDOM_CHARS = 6;
-var BAD_LINK_LIMIT = 200; // quá 200 lượt mở link sai trong 10 phút → tạm khoá 10 phút để chống dò link
 var STATUS_RANK = { '': 0, 'new': 0, 'opened': 1, 'draft': 2, 'submitted': 3 };
 
 /* ============================================================
@@ -229,10 +227,11 @@ function apiAdminCreate_(req) {
   return withLock_(function () {
     var now = new Date().toISOString();
     var code = slug_(bride) + '-' + slug_(groom) + '-' + randomId_(4);
+    var keys = coupleKeys_(bride, groom);
     var c = {
       code: code, brideName: bride, groomName: groom, weddingDate: date,
       venue: clean_(d.venue, 200), note: clean_(d.note, 1000),
-      brideKey: personKey_(bride), groomKey: personKey_(groom),
+      brideKey: keys.bride, groomKey: keys.groom,
       brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
     };
     sheet_(SHEET_COUPLES).appendRow(COUPLE_HEADERS.map(function (h) { return safeCell_(c[h]); }));
@@ -360,17 +359,12 @@ function readCouples_() {
 }
 
 function findByKey_(k) {
-  k = String(k || '');
-  var cache = CacheService.getScriptCache();
-  var bad = Number(cache.get('badLinks') || 0);
-  if (bad >= BAD_LINK_LIMIT) throw new Error('rate_limited');
-  var found = lookupKey_(k);
-  if (!found) cache.put('badLinks', String(bad + 1), 600);
-  return found;
+  k = String(k || '').toLowerCase();
+  return lookupKey_(k);
 }
 
 function lookupKey_(k) {
-  if (!/^[a-z0-9-]{8,40}$/.test(k)) return null;
+  if (!/^[a-z0-9-]{2,60}$/.test(k)) return null;
   var couples = readCouples_();
   for (var i = 0; i < couples.length; i++) {
     if (couples[i].brideKey === k) return { couple: couples[i], role: 'bride', row: couples[i].row };
@@ -429,12 +423,27 @@ function slug_(s) {
   return t || 'x';
 }
 
-// Mã link riêng của từng người: tên không dấu + 6 ký tự ngẫu nhiên, ví dụ "lan-anh-k7q2m9"
-function personKey_(name) {
-  var base = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+// Link riêng của từng người = tên mình + tên nửa kia, viết không dấu.
+// Ví dụ cô dâu Ân, chú rể Hoàng → "an-hoang" (của Ân) và "hoang-an" (của Hoàng).
+// Trùng với cặp đã có thì thêm số: "an-hoang-2".
+function nameSlug_(name) {
+  return String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, '');
-  return (base || 'ban') + '-' + randomId_(KEY_RANDOM_CHARS);
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 24).replace(/-+$/, '') || 'ban';
+}
+
+function coupleKeys_(bride, groom) {
+  var used = {};
+  readCouples_().forEach(function (c) { used[c.brideKey] = 1; used[c.groomKey] = 1; });
+  used.admin = 1;
+  var b = nameSlug_(bride), g = nameSlug_(groom);
+  for (var n = 1; n < 1000; n++) {
+    var suffix = n === 1 ? '' : '-' + n;
+    var kb = b + '-' + g + suffix, kg = g + '-' + b + suffix;
+    if (kb === kg) kg = kg + '-2';
+    if (!used[kb] && !used[kg]) return { bride: kb, groom: kg };
+  }
+  throw new Error('too_many_duplicates');
 }
 
 function randomId_(len) {

@@ -46,8 +46,8 @@
   };
 
   var params = new URLSearchParams(location.search);
-  // Link dạng /lovestory/lan-anh-k7q2m9xp (mới) hoặc /lovestory/?k=... (cũ)
-  var pathKey = (location.pathname.match(/\/lovestory\/([a-z0-9-]{8,40})\/?$/i) || [])[1] || '';
+  // Link dạng /lovestory/an-hoang (mới) hoặc /lovestory/?k=... (cũ)
+  var pathKey = (location.pathname.match(/\/lovestory\/([a-z0-9-]{2,60})\/?$/i) || [])[1] || '';
   var S = {
     k: (pathKey || params.get('k') || '').trim().toLowerCase(),
     lang: 'vi',
