@@ -63,7 +63,7 @@ function doPost(e) {
   try {
     var req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     var action = String(req.action || '');
-    var publicActions = { session: apiSession_, save: apiSave_, submit: apiSubmit_ };
+    var publicActions = { couple: apiCouple_, session: apiSession_, save: apiSave_, submit: apiSubmit_ };
     var adminActions = {
       adminLogin: function () { return { ok: true }; },
       adminList: apiAdminList_,
@@ -90,6 +90,17 @@ function json_(obj) {
 /* ============================================================
  * API cho dâu rể
  * ============================================================ */
+// Link chung của cặp đôi: trả về tên hai người để chọn "Bạn là ai?"
+function apiCouple_(req) {
+  var found = findByKey_(req.k);
+  if (!found) return { ok: false, error: 'invalid_link' };
+  var c = found.couple;
+  return {
+    ok: true, brideName: c.brideName, groomName: c.groomName,
+    brideKey: c.brideKey, groomKey: c.groomKey, weddingDate: c.weddingDate
+  };
+}
+
 function apiSession_(req) {
   var found = findByKey_(req.k);
   if (!found) return { ok: false, error: 'invalid_link' };

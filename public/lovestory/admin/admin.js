@@ -317,46 +317,40 @@
     });
   }
 
-  function message(c, role, lang) {
-    var self = role === 'bride' ? c.brideName : c.groomName;
-    var partner = role === 'bride' ? c.groomName : c.brideName;
-    var url = link(role === 'bride' ? c.brideKey : c.groomKey) + (lang === 'en' ? '?lang=en' : '');
+  function coupleLink(c) { return link(c.brideKey); }
+
+  function message(c, lang) {
+    var url = coupleLink(c) + (lang === 'en' ? '?lang=en' : '');
     if (lang === 'en') {
-      return 'Hi ' + self + ' 💛\n' +
-        "This is Thiên Ân. Here's your link to share your love story, so I can prepare the Love Story moment for your wedding on " + fmtDate(c.weddingDate) + '.\n\n' +
+      return 'Hi ' + c.brideName + ' & ' + c.groomName + ' 💛\n' +
+        "This is Thiên Ân. Here's the link to share your love story, so I can prepare the Love Story moment for your wedding on " + fmtDate(c.weddingDate) + '.\n\n' +
         '👉 ' + url + '\n\n' +
-        'This link is just for you — ' + partner + ' has their own, so they won’t see your answers. ' +
-        'It takes about 20–25 minutes, and your answers save automatically so you can come back anytime.\n' +
-        'Thank you! — Thiên Ân';
+        'Each of you, please open the link, tap your own name and answer separately. It takes about 20–25 minutes, and your answers save automatically so you can come back anytime.\n' +
+        'Thank you both! — Thiên Ân';
     }
-    return 'Chào ' + self + ' 💛\n' +
-      'Thiên Ân gửi bạn link kể câu chuyện tình yêu của hai bạn, để mình chuẩn bị phần Love Story cho đám cưới ngày ' + fmtDate(c.weddingDate) + '.\n\n' +
+    return 'Chào ' + c.brideName + ' & ' + c.groomName + ' 💛\n' +
+      'Thiên Ân gửi hai bạn link kể câu chuyện tình yêu, để mình chuẩn bị phần Love Story cho đám cưới ngày ' + fmtDate(c.weddingDate) + '.\n\n' +
       '👉 ' + url + '\n\n' +
-      'Đây là link riêng của bạn. ' + partner + ' có link riêng nên sẽ không xem được câu trả lời của bạn đâu nhé. ' +
-      'Bạn điền khoảng 20–25 phút, câu trả lời tự lưu nên có thể dừng lại và điền tiếp bất cứ lúc nào.\n' +
-      'Cảm ơn bạn! — Thiên Ân';
+      'Mỗi bạn mở link, bấm chọn đúng tên mình rồi trả lời riêng nhé, khoảng 20–25 phút mỗi người. Câu trả lời tự lưu nên có thể dừng lại và điền tiếp bất cứ lúc nào.\n' +
+      'Cảm ơn hai bạn! — Thiên Ân';
   }
 
   function showLinks(c, justCreated) {
-    function box(role) {
-      var name = role === 'bride' ? c.brideName : c.groomName;
-      var url = link(role === 'bride' ? c.brideKey : c.groomKey);
-      return '<div class="linkbox"><h3>' + (role === 'bride' ? 'Cô dâu' : 'Chú rể') + ' · ' + esc(name) + '</h3>' +
-        '<input class="field" readonly value="' + esc(url) + '" onclick="this.select()">' +
-        '<div class="row"><button class="btn btn--solid btn--sm" data-copy="url" data-role="' + role + '">Copy link</button>' +
-        '<button class="btn btn--outline btn--sm" data-copy="vi" data-role="' + role + '">Copy tin nhắn (VI)</button>' +
-        '<button class="btn btn--outline btn--sm" data-copy="en" data-role="' + role + '">Copy tin nhắn (EN)</button></div></div>';
-    }
+    var url = coupleLink(c);
     openModal('<h2>' + (justCreated ? 'Đã tạo link ✨' : 'Link mời') + '</h2>' +
-      '<p class="body" style="font-size:14px">Gửi riêng từng link cho cô dâu và chú rể (Zalo, Messenger…). Mỗi người chỉ xem được câu trả lời của mình.</p>' +
-      box('bride') + box('groom') +
+      '<p class="body" style="font-size:14px">Một link chung cho cả hai bạn, gửi thẳng vào group. Khi mở link, mỗi người bấm chọn tên mình rồi trả lời riêng.</p>' +
+      '<div class="linkbox"><h3>' + esc(c.brideName) + ' &amp; ' + esc(c.groomName) + '</h3>' +
+      '<input class="field" readonly value="' + esc(url) + '" onclick="this.select()">' +
+      '<div class="row"><button class="btn btn--solid btn--sm" data-copy="url">Copy link</button>' +
+      '<button class="btn btn--outline btn--sm" data-copy="vi">Copy tin nhắn group (VI)</button>' +
+      '<button class="btn btn--outline btn--sm" data-copy="en">Copy tin nhắn group (EN)</button></div></div>' +
       '<div class="modal__actions"><button type="button" class="btn btn--solid" data-close>Xong</button></div>');
     modalPanel.querySelector('.modal__actions [data-close]').addEventListener('click', closeModal);
     modalPanel.querySelectorAll('[data-copy]').forEach(function (b) {
       b.addEventListener('click', function () {
-        var role = b.getAttribute('data-role'), kind = b.getAttribute('data-copy');
-        if (kind === 'url') copy(link(role === 'bride' ? c.brideKey : c.groomKey), 'Đã copy link');
-        else copy(message(c, role, kind), 'Đã copy tin nhắn');
+        var kind = b.getAttribute('data-copy');
+        if (kind === 'url') copy(url, 'Đã copy link');
+        else copy(message(c, kind), 'Đã copy tin nhắn');
       });
     });
   }

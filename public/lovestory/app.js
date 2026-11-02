@@ -42,7 +42,15 @@
     demoGroom: { vi: 'Xem thử với vai chú rể', en: 'Preview as the groom' },
     netTitle: { vi: 'Chưa kết nối được', en: 'Can’t connect right now' },
     netBody: { vi: 'Bạn kiểm tra kết nối mạng rồi thử lại nhé.', en: 'Please check your connection and try again.' },
-    retry: { vi: 'Thử lại', en: 'Try again' }
+    retry: { vi: 'Thử lại', en: 'Try again' },
+    whoTitle: { vi: 'Bạn là *ai* nhỉ?', en: 'Who’s *filling this in*?' },
+    whoBody: {
+      vi: 'Mỗi bạn chọn đúng tên mình và trả lời riêng, theo cảm nhận của chính mình nhé.',
+      en: 'Each of you picks your own name and answers separately, in your own words.'
+    },
+    bride: { vi: 'Cô dâu', en: 'Bride' },
+    groom: { vi: 'Chú rể', en: 'Groom' },
+    notYou: { vi: 'Không phải {self}? Đổi người', en: 'Not {self}? Switch person' }
   };
 
   var params = new URLSearchParams(location.search);
@@ -117,6 +125,7 @@
       b.setAttribute('aria-pressed', b.getAttribute('data-set-lang') === S.lang);
     });
     var demoBanner = document.getElementById('demoBanner');
+    if (!S.Q) { if (API.demo) { demoBanner.hidden = false; demoBanner.textContent = t(UI.demo); } return; }
     if (API.demo) { demoBanner.hidden = false; demoBanner.textContent = t(UI.demo); }
     if (rerender && S.noticeKind) { renderNotice(S.noticeKind); return; }
     if (rerender && S.Q && S.session) { var y = window.scrollY; render({ still: true }); window.scrollTo(0, y); writeLocal(); }
@@ -307,7 +316,7 @@
         return '<li><b>0' + (i + 1) + '</b><span>' + txt(p) + '</span></li>';
       }).join('') + '</ol>' +
       '<button type="button" class="btn btn--solid btn--wide" data-action="start">' +
-      (started ? txt(I.resume) : txt(I.button)) + ' →</button>';
+      (started ? txt(I.resume) : txt(I.button)) + ' →</button>' + switchLink();
   }
 
   function renderSection(i) {
@@ -373,6 +382,11 @@
       '</div></div>';
   }
 
+  function switchLink() {
+    if (!S.couple) return '';
+    return '<p class="switch"><button type="button" class="link-btn" data-action="switch">' + txt(UI.notYou) + '</button></p>';
+  }
+
   function lockIcon() {
     return '<svg width="10" height="11" viewBox="0 0 10 11" aria-hidden="true"><rect x="1" y="5" width="8" height="6" rx="1" fill="currentColor"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>';
   }
@@ -416,7 +430,7 @@
       '<div class="ornament"></div>' +
       '<p class="body">' + txt(T.body) + '</p>' +
       '<p class="signature"><span>' + esc(T.signature) + '</span></p>' +
-      '<button type="button" class="btn btn--outline" data-action="goto" data-step="' + reviewIndex() + '">' + txt(T.edit) + '</button></div>';
+      '<button type="button" class="btn btn--outline" data-action="goto" data-step="' + reviewIndex() + '">' + txt(T.edit) + '</button>' + switchLink() + '</div>';
   }
 
   function renderNotice(kind) {
@@ -426,6 +440,14 @@
     if (kind === 'network') {
       html = '<h1 class="title">' + esc(t(UI.netTitle)) + '</h1><p class="body">' + esc(t(UI.netBody)) + '</p>' +
         '<div class="actions"><button type="button" class="btn btn--solid" onclick="location.reload()">' + esc(t(UI.retry)) + '</button></div>';
+    } else if (kind === 'picker' && S.couple) {
+      var c = S.couple;
+      html = monogram() + '<p class="kicker-script">Love Story</p><h1 class="display">' + rich(UI.whoTitle) + '</h1>' +
+        '<p class="body">' + esc(t(UI.whoBody)) + '</p>' +
+        '<div class="who">' +
+        '<button type="button" class="who__btn" data-action="pick" data-key="' + esc(c.brideKey) + '"><span class="who__role">' + esc(t(UI.bride)) + '</span><span class="who__name">' + esc(c.brideName) + '</span><span class="who__arrow" aria-hidden="true">→</span></button>' +
+        '<button type="button" class="who__btn" data-action="pick" data-key="' + esc(c.groomKey) + '"><span class="who__role">' + esc(t(UI.groom)) + '</span><span class="who__name">' + esc(c.groomName) + '</span><span class="who__arrow" aria-hidden="true">→</span></button>' +
+        '</div>';
     } else if (kind === 'landing' && S.Q && S.Q.landing) {
       html = '<p class="kicker-script">Thiên Ân</p><h1 class="display">' + rich(S.Q.landing.title) + '</h1>' +
         '<div class="ornament"></div><p class="body">' + txt(S.Q.landing.body) + '</p>' +
@@ -441,16 +463,23 @@
     }
     app.innerHTML = '<div class="screen notice">' + html + '</div>';
     stagger(app.querySelector('.screen'));
-    petals(kind === 'landing' ? 'soft' : null);
+    petals(kind === 'landing' || kind === 'picker' ? 'soft' : null);
   }
 
   /* ---------------- hiệu ứng ---------------- */
   function monogram() {
-    if (!S.session) return '';
-    var d = (S.answers.q1_7 || (S.session.couple || {}).weddingDate || '').split('-');
+    var a, b, wd;
+    if (S.couple) { a = S.couple.brideName; b = S.couple.groomName; wd = S.couple.weddingDate; }
+    else if (S.session) {
+      a = S.session.role === 'groom' ? S.session.partnerName : S.session.selfName;
+      b = S.session.role === 'groom' ? S.session.selfName : S.session.partnerName;
+      wd = (S.session.couple || {}).weddingDate;
+    } else return '';
+    if (S.session && S.answers.q1_7) wd = S.answers.q1_7;
+    var d = String(wd || '').split('-');
     var date = d.length === 3 ? d[2] + ' · ' + d[1] + ' · ' + d[0] : '';
-    return '<div class="monogram" aria-hidden="true"><span class="monogram__names">' + esc(S.session.selfName) +
-      '<em>&amp;</em>' + esc(S.session.partnerName) + '</span>' + (date ? '<span class="monogram__date">' + esc(date) + '</span>' : '') + '</div>';
+    return '<div class="monogram" aria-hidden="true"><span class="monogram__names">' + esc(a) +
+      '<em>&amp;</em>' + esc(b) + '</span>' + (date ? '<span class="monogram__date">' + esc(date) + '</span>' : '') + '</div>';
   }
 
   function stagger(screen) {
@@ -533,6 +562,8 @@
     var a = act.getAttribute('data-action');
     if (a === 'start') goTo(S.resumeStep > 0 && S.resumeStep <= reviewIndex() ? S.resumeStep : 0);
     if (a === 'goto') goTo(+act.getAttribute('data-step'));
+    if (a === 'pick') choosePerson(act.getAttribute('data-key'));
+    if (a === 'switch') switchPerson();
   });
 
   function findQ(id) {
@@ -545,24 +576,63 @@
   }
 
   /* ---------------- khởi động ---------------- */
-  function init() {
-    var local = S.k ? readLocal() : null;
-    var urlLang = params.get('lang');
-    setLang(urlLang || (local && local.lang) || 'vi', false);
+  function loadQuestions() {
+    if (S.Q) return Promise.resolve(S.Q);
+    return fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+      .then(function (q) { S.Q = q; return q; });
+  }
 
+  function whoKey() { return 'lovestory_who_' + S.linkKey; }
+
+  function init() {
+    var urlLang = params.get('lang');
+    S.linkKey = S.k;
     if (!S.k) {
-      fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
-        .then(function (q) { S.Q = q; renderNotice('landing'); })
-        .catch(function () { renderNotice('badlink'); });
+      setLang(urlLang || 'vi', false);
+      loadQuestions().then(function () { renderNotice('landing'); }).catch(function () { renderNotice('badlink'); });
       return;
     }
+    var remembered = null;
+    try { remembered = localStorage.getItem(whoKey()); } catch (e) {}
+    var local0 = remembered ? (function () { try { return JSON.parse(localStorage.getItem('lovestory_' + remembered) || 'null'); } catch (e) { return null; } })() : null;
+    setLang(urlLang || (local0 && local0.lang) || 'vi', false);
 
-    Promise.all([
-      fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }),
-      API.call({ action: 'session', k: S.k })
-    ]).then(function (res) {
-      S.Q = res[0];
-      var sess = res[1];
+    Promise.all([loadQuestions(), API.call({ action: 'couple', k: S.k })]).then(function (res) {
+      var c = res[1];
+      if (c && c.ok) {
+        S.couple = c;
+        if (remembered && (remembered === c.brideKey || remembered === c.groomKey)) return startSession(remembered);
+        return renderNotice('picker');
+      }
+      if (c && c.error === 'invalid_link') return renderNotice('badlink');
+      // Apps Script bản cũ chưa có "couple" → mở thẳng như link riêng
+      return startSession(S.k);
+    }).catch(function () { renderNotice('network'); });
+  }
+
+  function choosePerson(key) {
+    try { localStorage.setItem(whoKey(), key); } catch (e) {}
+    startSession(key);
+  }
+
+  function switchPerson() {
+    sync();
+    try { localStorage.removeItem(whoKey()); } catch (e) {}
+    S.session = null;
+    nav.hidden = true;
+    progressBar.style.width = '0%';
+    renderNotice('picker');
+    window.scrollTo(0, 0);
+  }
+
+  function startSession(key) {
+    S.k = key;
+    S.session = null; S.answers = {}; S.ver = 0; S.syncedVer = 0; S.invalid = {};
+    S.status = 'new'; S.serverUpdatedAt = ''; S.lastRendered = null; S.noticeKind = null;
+    app.innerHTML = '<div class="loading"><span></span></div>';
+    var local = readLocal();
+    var urlLang = params.get('lang');
+    return API.call({ action: 'session', k: key }).then(function (sess) {
       if (!sess || !sess.ok) {
         if (sess && sess.error === 'invalid_link') return renderNotice('badlink');
         throw new Error('session_failed');
@@ -589,6 +659,7 @@
       S.resumeStep = local && typeof local.step === 'number' ? Math.min(local.step, reviewIndex()) : -1;
       S.step = S.status === 'submitted' ? thanksIndex() : -1;
       render();
+      window.scrollTo(0, 0);
       if (S.ver !== S.syncedVer) sync();
     }).catch(function () { renderNotice('network'); });
   }

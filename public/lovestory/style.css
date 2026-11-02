@@ -347,3 +347,23 @@ textarea.field:focus { box-shadow: 0 0 0 4px var(--blush-soft); }
   .monogram__names { font-size: 19px; }
   .section-num { top: -14px; }
 }
+
+/* Chọn người: "Bạn là ai?" */
+.who { display: grid; gap: 14px; margin: 30px 0 10px; }
+.who__btn {
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: "role arrow" "name arrow";
+  align-items: center; text-align: left; gap: 2px 16px;
+  padding: 20px 22px; background: rgba(255, 255, 255, .8);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  transition: border-color .3s, background .3s, transform .3s cubic-bezier(.2, .7, .2, 1), box-shadow .3s;
+}
+.who__btn:hover, .who__btn:focus-visible { border-color: var(--champagne); transform: translateY(-2px); box-shadow: 0 14px 34px rgba(181, 121, 74, .12); outline: none; }
+.who__btn:active { transform: translateY(0); }
+.who__role { grid-area: role; font: 500 10.5px/1.4 var(--caps); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.who__name { grid-area: name; font: 500 30px/1.2 var(--serif); }
+.who__arrow { grid-area: arrow; font-size: 20px; color: var(--champagne); transition: transform .3s; }
+.who__btn:hover .who__arrow { transform: translateX(5px); }
+@media (min-width: 560px) { .who { grid-template-columns: 1fr 1fr; } }
+.switch { margin: 22px 0 0; text-align: center; }
+.switch .link-btn { color: var(--muted); }
+.switch .link-btn:hover { color: var(--champagne); }

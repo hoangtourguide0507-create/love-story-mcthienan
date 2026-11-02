@@ -77,7 +77,7 @@ Từ giờ, mỗi lần có code mới đẩy lên GitHub, Netlify tự cập nh
    - Có nhận được email thông báo.
    - Sheet có thêm dòng trong trang tính `Responses`.
    - Trang quản trị hiện câu trả lời.
-3. Mở link chú rể và kiểm tra rằng **không** thấy câu trả lời của cô dâu.
+3. Mở lại link, bấm **Đổi người**, chọn tên chú rể và kiểm tra rằng phần của chú rể là trang trống, chưa có câu trả lời của cô dâu.
 4. Xoá cặp thử bằng nút cuối trang chi tiết.
 
 ---
@@ -85,7 +85,7 @@ Từ giờ, mỗi lần có code mới đẩy lên GitHub, Netlify tự cập nh
 ## Vận hành hằng ngày
 
 1. Chốt hợp đồng với cặp đôi, vào trang quản trị bấm **+ Cặp mới**.
-2. Bấm **Copy tin nhắn (VI)** hoặc **(EN)** rồi gửi riêng cho cô dâu và chú rể qua Zalo. Tin nhắn tiếng Anh tự mở form bằng tiếng Anh.
+2. Bấm **Copy tin nhắn group (VI)** hoặc **(EN)** rồi gửi vào group chung. Tin nhắn tiếng Anh tự mở form bằng tiếng Anh.
 3. Mỗi khi có người gửi, bạn nhận email. Trang quản trị cho thấy ai chưa xong để nhắc.
 4. Khi viết kịch bản, bấm **Copy toàn bộ** và dán cho Claude, hoặc bấm **In / PDF**.
 5. Dữ liệu tự xoá **6 tháng sau ngày cưới**. Script tự kiểm tra lúc 3 giờ sáng mỗi ngày.
@@ -107,8 +107,7 @@ Khi `apiUrl` trong `config.js` còn để trống, trang chạy ở chế độ 
 
 ## Dạng link mời
 
-Link của mỗi người gồm tên mình rồi đến tên nửa kia, viết không dấu. Ví dụ cô dâu Ân và chú rể Hoàng:
-- Link của Ân: `https://mc-thien-an.netlify.app/lovestory/an-hoang`
-- Link của Hoàng: `https://mc-thien-an.netlify.app/lovestory/hoang-an`
+Mỗi cặp có **một link chung**, gửi thẳng vào group, ví dụ `https://mc-thien-an.netlify.app/lovestory/an-hoang`.
+Khi mở link, trang hỏi *"Bạn là ai?"* và hiện hai nút tên cô dâu, chú rể. Mỗi người bấm chọn tên mình rồi trả lời riêng. Trình duyệt nhớ lựa chọn này, lần sau mở lại sẽ vào thẳng phần của mình. Muốn đổi người thì bấm "Không phải …? Đổi người".
 
-Nếu trùng với một cặp đã có, hệ thống tự thêm số, ví dụ `an-hoang-2`. Link dạng cũ vẫn mở được bình thường.
+Không có mật khẩu, nên về nguyên tắc người này vẫn có thể bấm vào tên người kia. Nếu trùng tên với một cặp đã có, hệ thống tự thêm số, ví dụ `an-hoang-2`. Link dạng cũ vẫn mở được.

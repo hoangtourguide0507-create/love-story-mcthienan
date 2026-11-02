@@ -55,6 +55,9 @@
     function handle(req) {
       var db = load(), f, r, now = new Date().toISOString();
       switch (req.action) {
+        case 'couple':
+          f = byKey(db, req.k); if (!f) return { ok: false, error: 'invalid_link' };
+          return { ok: true, brideName: f.c.brideName, groomName: f.c.groomName, brideKey: f.c.brideKey, groomKey: f.c.groomKey, weddingDate: f.c.weddingDate };
         case 'session':
           f = byKey(db, req.k); if (!f) return { ok: false, error: 'invalid_link' };
           bump(f.c, f.role, 'opened'); save(db);
