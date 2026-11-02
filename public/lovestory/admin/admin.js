@@ -213,7 +213,8 @@
       '<button class="btn btn--outline btn--sm" data-act="links" data-code="' + esc(c.code) + '">Link mời</button>' +
       '<button class="btn btn--outline btn--sm" data-act="edit">Sửa thông tin</button>' +
       '<button class="btn btn--outline btn--sm" data-act="print">In / PDF</button>' +
-      '<button class="btn btn--solid btn--sm" data-act="copyAll">Copy toàn bộ</button></div></div>' +
+      '<button class="btn btn--outline btn--sm" data-act="copyAll">Copy câu trả lời</button>' +
+      '<button class="btn btn--solid btn--sm" data-act="ai">✨ Tạo bản cho AI</button></div></div>' +
       '<div class="detail-head"><p class="kicker-script">Love Story</p>' +
       '<h1 class="display">' + esc(c.brideName) + ' <em>&amp;</em> ' + esc(c.groomName) + '</h1>' +
       '<p class="detail-meta"><span>Ngày cưới <b>' + esc(fmtDate(c.weddingDate)) + '</b></span>' +
@@ -264,6 +265,167 @@
     return out.join('\n');
   }
 
+  /* ---------------- bản tổng hợp cho AI viết kịch bản ---------------- */
+  var LENGTHS = {
+    short: { label: 'Ngắn · khoảng 2 phút', words: 'khoảng 250–300 từ' },
+    medium: { label: 'Vừa · khoảng 3–4 phút', words: 'khoảng 450–550 từ' },
+    long: { label: 'Dài · khoảng 5–6 phút', words: 'khoảng 700–850 từ' }
+  };
+  var LANGS = {
+    both: 'Song ngữ. Mỗi đoạn tiếng Việt viết liền mạch, ngay sau là đoạn tiếng Anh tương ứng in nghiêng. Chỉ dùng tiêu đề phần, không ghi nhãn VI/EN trong câu.',
+    vi: 'Tiếng Việt.',
+    en: 'Tiếng Anh.'
+  };
+  var MOODS = { warm: 'Ấm áp, xúc động', fun: 'Vui nhộn, hài hước', romantic: 'Lãng mạn', elegant: 'Trang trọng, sang trọng' };
+
+  function both(id) {
+    var d = A.current, ba = (d.bride && d.bride.answers) || {}, ga = (d.groom && d.groom.answers) || {};
+    return { b: ba[id], g: ga[id] };
+  }
+
+  function aiDefaults() {
+    var m = both('q5_4'), l = both('q5_5');
+    var moods = [].concat(Array.isArray(m.b) ? m.b : [], Array.isArray(m.g) ? m.g : [])
+      .filter(function (x, i, arr) { return MOODS[x] && arr.indexOf(x) === i; });
+    var lang = l.b === 'both' || l.g === 'both' || (l.b && l.g && l.b !== l.g) ? 'both' : (l.b || l.g || 'both');
+    return { lang: lang, length: 'medium', moods: moods.length ? moods : ['warm', 'romantic'], mcs: '1', note: '' };
+  }
+
+  function aiBrief(o) {
+    var d = A.current, c = d.couple;
+    var ba = (d.bride && d.bride.answers) || {}, ga = (d.groom && d.groom.answers) || {};
+    var B = c.brideName, G = c.groomName;
+    function val(q, ans) { return visibleFor(q, ans) ? answerText(q, ans[q.id]) : null; }
+    function qById(id) {
+      for (var i = 0; i < A.Q.sections.length; i++) for (var j = 0; j < A.Q.sections[i].questions.length; j++)
+        if (A.Q.sections[i].questions[j].id === id) return A.Q.sections[i].questions[j];
+      return null;
+    }
+    function pair(id) { var q = qById(id); return q ? { b: val(q, ba), g: val(q, ga) } : { b: null, g: null }; }
+
+    var avoid = pair('q5_6');
+    var L = [];
+    L.push('# YÊU CẦU');
+    L.push('Bạn là người viết kịch bản cho MC Thiên Ân, MC đám cưới cao cấp, dẫn song ngữ Việt – Anh.');
+    L.push('Hãy viết phần dẫn **Love Story** cho đám cưới của ' + B + ' & ' + G + ', dựa trên chia sẻ riêng của cô dâu và chú rể ở bên dưới.');
+    L.push('');
+    L.push('- Độ dài: ' + LENGTHS[o.length].label.split('·')[1].trim() + ' đọc trên sân khấu, ' + LENGTHS[o.length].words + (o.lang === 'both' ? ' cho mỗi ngôn ngữ.' : '.'));
+    L.push('- Ngôn ngữ: ' + LANGS[o.lang]);
+    L.push('- Giọng điệu: ' + (o.moods.length ? o.moods.map(function (m) { return MOODS[m]; }).join('; ') : 'ấm áp, tinh tế') + '.');
+    L.push('- Số MC: ' + (o.mcs === '2' ? '2 MC dẫn đối đáp (Thiên Ân và một MC nữa). Ghi rõ tên người nói ở đầu mỗi lượt lời.' : '1 MC (Thiên Ân).'));
+    L.push('- Kể theo dòng thời gian: gặp gỡ → hẹn hò → cầu hôn hoặc quyết định về chung nhà → hôm nay → tương lai.');
+    L.push('- Đan xen góc nhìn của cả hai. Khi hai người kể khác nhau về cùng một chuyện, dùng chính sự khác biệt đó một cách duyên dáng.');
+    L.push('- Có thể dùng tên thân mật, cách xưng hô và những câu nói chỉ hai người hiểu, nếu phù hợp với không khí trang trọng của tiệc.');
+    L.push('- Nếu có lời hứa của hai bạn, gợi ý cách lồng vào nghi thức "I Do" ở cuối phần dẫn.');
+    if (avoid.b || avoid.g) {
+      L.push('- TUYỆT ĐỐI KHÔNG nhắc tới những điều sau:');
+      if (avoid.b) L.push('  - Theo cô dâu: ' + avoid.b.replace(/\n/g, ' '));
+      if (avoid.g) L.push('  - Theo chú rể: ' + avoid.g.replace(/\n/g, ' '));
+    }
+    L.push('- Không bịa thêm chi tiết không có trong chia sẻ. Chỗ nào thiếu thông tin, ghi [CẦN HỎI THÊM: …] để MC hỏi lại cặp đôi.');
+    if (o.note.trim()) L.push('- Ghi chú thêm của MC: ' + o.note.trim().replace(/\n/g, ' '));
+
+    L.push('', '# THÔNG TIN CẶP ĐÔI');
+    function person(role, name, ans) {
+      function v(id) { var q = qById(id); return q ? val(q, ans) : null; }
+      var parts = [role + ': ' + name];
+      if (v('q1_2')) parts.push('tên thân mật: ' + v('q1_2'));
+      if (v('q1_4')) parts.push('bố: ' + v('q1_4'));
+      if (v('q1_5')) parts.push('mẹ: ' + v('q1_5'));
+      return '- ' + parts.join(' · ');
+    }
+    L.push(person('Cô dâu', B, ba));
+    L.push(person('Chú rể', G, ga));
+    L.push('- Ngày cưới: ' + fmtDate(c.weddingDate) + (c.venue ? ' · Địa điểm: ' + c.venue : ''));
+    var met = pair('q2_1');
+    if (met.b || met.g) L.push('- Quen nhau từ: ' + (met.b || met.g) + (met.b && met.g && met.b !== met.g ? ' (chú rể nhớ là ' + met.g + ')' : ''));
+    var lg = pair('q5_5');
+    if (lg.b || lg.g) L.push('- Ngôn ngữ khách mời: ' + (lg.b || lg.g));
+    var fam = pair('q1_6');
+    if (fam.b) L.push('- Lưu ý về gia đình (cô dâu): ' + fam.b.replace(/\n/g, ' '));
+    if (fam.g) L.push('- Lưu ý về gia đình (chú rể): ' + fam.g.replace(/\n/g, ' '));
+    if (c.note) L.push('- Ghi chú của MC về cặp đôi: ' + c.note.replace(/\n/g, ' '));
+
+    L.push('', '# CHIA SẺ CỦA CÔ DÂU VÀ CHÚ RỂ');
+    var skip = { q2_1: 1, q5_4: 1, q5_5: 1, q5_6: 1 };
+    var hasAny = false;
+    A.Q.sections.forEach(function (sec) {
+      if (sec.id === 'about') return;
+      var block = [];
+      sec.questions.forEach(function (q) {
+        if (skip[q.id]) return;
+        var bv = val(q, ba), gv = val(q, ga);
+        if (bv == null && gv == null) return;
+        block.push('', '### ' + labelVi(q, 'nửa kia'));
+        block.push('- Cô dâu (' + B + '): ' + (bv == null ? '(không trả lời)' : bv.replace(/\n/g, '\n  ')));
+        block.push('- Chú rể (' + G + '): ' + (gv == null ? '(không trả lời)' : gv.replace(/\n/g, '\n  ')));
+      });
+      if (block.length) { hasAny = true; L.push('', '## ' + sec.title.vi); Array.prototype.push.apply(L, block); }
+    });
+    if (!hasAny) L.push('', '(Chưa có câu trả lời nào.)');
+    return L.join('\n');
+  }
+
+  function showAiBrief() {
+    var o = aiDefaults();
+    function radio(name, opts, cur) {
+      return Object.keys(opts).map(function (k) {
+        return '<button type="button" class="chip' + (k === cur ? ' is-on' : '') + '" data-opt="' + name + '" data-val="' + k + '">' + esc(opts[k]) + '</button>';
+      }).join('');
+    }
+    function draw() {
+      var lens = {}; Object.keys(LENGTHS).forEach(function (k) { lens[k] = LENGTHS[k].label; });
+      openModal('<h2>Bản tổng hợp cho AI</h2>' +
+        '<p class="body" style="font-size:14px">Chọn vài thông số, rồi copy hoặc tải về và dán vào Claude để viết kịch bản Love Story.</p>' +
+        '<div class="form-grid ai-opts">' +
+        '<div><label>Ngôn ngữ kịch bản</label><div class="chips">' + radio('lang', { both: 'Song ngữ', vi: 'Tiếng Việt', en: 'Tiếng Anh' }, o.lang) + '</div></div>' +
+        '<div><label>Độ dài</label><div class="chips">' + radio('length', lens, o.length) + '</div></div>' +
+        '<div><label>Giọng điệu <span style="text-transform:none;letter-spacing:0">(lấy sẵn từ câu 5.4, chọn được nhiều)</span></label><div class="chips">' +
+        Object.keys(MOODS).map(function (k) {
+          return '<button type="button" class="chip' + (o.moods.indexOf(k) !== -1 ? ' is-on' : '') + '" data-mood="' + k + '">' + esc(MOODS[k]) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div><label>Số MC</label><div class="chips">' + radio('mcs', { '1': '1 MC', '2': '2 MC đối đáp' }, o.mcs) + '</div></div>' +
+        '<div><label for="ai_note">Ghi chú thêm cho AI (tuỳ chọn)</label><textarea class="field" id="ai_note" style="min-height:70px" placeholder="Ví dụ: mở đầu bằng câu thơ, kết thúc bằng lời mời nâng ly…">' + esc(o.note) + '</textarea></div>' +
+        '<div><label for="ai_out">Xem trước</label><textarea class="field ai-out" id="ai_out" readonly></textarea></div>' +
+        '</div>' +
+        '<div class="modal__actions"><button type="button" class="btn btn--ghost" data-close>Đóng</button>' +
+        '<button type="button" class="btn btn--outline" id="ai_dl">Tải file .txt</button>' +
+        '<button type="button" class="btn btn--solid" id="ai_copy">Copy cho AI</button></div>');
+      modal.querySelector('.modal__panel').classList.add('modal__panel--wide');
+      var out = document.getElementById('ai_out');
+      function refresh() { out.value = aiBrief(o); }
+      refresh();
+      modalPanel.querySelector('[data-close]').addEventListener('click', closeModal);
+      modalPanel.querySelectorAll('[data-opt]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          o[b.getAttribute('data-opt')] = b.getAttribute('data-val');
+          modalPanel.querySelectorAll('[data-opt="' + b.getAttribute('data-opt') + '"]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+          refresh();
+        });
+      });
+      modalPanel.querySelectorAll('[data-mood]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var m = b.getAttribute('data-mood'), i = o.moods.indexOf(m);
+          if (i === -1) o.moods.push(m); else o.moods.splice(i, 1);
+          b.classList.toggle('is-on', i === -1);
+          refresh();
+        });
+      });
+      document.getElementById('ai_note').addEventListener('input', function (e) { o.note = e.target.value; refresh(); });
+      document.getElementById('ai_copy').addEventListener('click', function () { copy(out.value, 'Đã copy — dán vào Claude để viết kịch bản'); });
+      document.getElementById('ai_dl').addEventListener('click', function () {
+        var c = A.current.couple;
+        var blob = new Blob([out.value], { type: 'text/plain;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'love-story-' + c.code.replace(/-[a-z0-9]{4}$/, '') + '.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      });
+    }
+    draw();
+  }
+
   /* ---------------- modal ---------------- */
   function openModal(html) {
     modalPanel.innerHTML = html;
@@ -271,7 +433,7 @@
     var f = modalPanel.querySelector('input, button');
     if (f) f.focus();
   }
-  function closeModal() { modal.hidden = true; modalPanel.innerHTML = ''; }
+  function closeModal() { modal.hidden = true; modalPanel.innerHTML = ''; modalPanel.classList.remove('modal__panel--wide'); }
   modal.addEventListener('click', function (e) { if (e.target.hasAttribute('data-close')) closeModal(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 
@@ -369,6 +531,7 @@
     else if (act === 'edit') coupleForm(A.current.couple);
     else if (act === 'print') window.print();
     else if (act === 'copyAll') copy(plainText(), 'Đã copy toàn bộ câu trả lời');
+    else if (act === 'ai') showAiBrief();
     else if (act === 'delete') {
       var c = A.current.couple;
       if (!window.confirm('Xoá ' + c.brideName + ' & ' + c.groomName + ' và toàn bộ câu trả lời? Không thể khôi phục.')) return;

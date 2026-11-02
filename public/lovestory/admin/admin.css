@@ -106,3 +106,12 @@
   .qa__cell { background: none !important; border: 1px solid var(--line); }
   body { font-size: 12px; }
 }
+
+/* Bản tổng hợp cho AI */
+.modal__panel--wide { width: min(820px, 100%); }
+.ai-opts .chips { gap: 8px; margin-top: 6px; }
+.ai-opts .chip { padding: 8px 13px; font-size: 11.5px; }
+.ai-out {
+  min-height: 300px !important; max-height: 46vh; overflow: auto !important; resize: vertical !important;
+  font: 400 13px/1.65 var(--sans) !important; white-space: pre-wrap;
+}
