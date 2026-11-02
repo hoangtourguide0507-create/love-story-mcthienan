@@ -20,7 +20,7 @@
     saveError: { vi: 'Chưa lưu lên được, sẽ tự thử lại', en: "Couldn't save yet, retrying" },
     offline: { vi: 'Mất mạng — câu trả lời vẫn được giữ trên máy', en: 'Offline — your answers are kept on this device' },
     required: { vi: 'Bạn vui lòng điền câu này nhé.', en: 'Please fill this in.' },
-    privateBadge: { vi: 'Chỉ Thiên Ân đọc', en: 'Only Thiên Ân reads this' },
+    privateBadge: { vi: 'Dành riêng cho Thiên Ân', en: 'Just for Thiên Ân' },
     edit: { vi: 'Sửa', en: 'Edit' },
     empty: { vi: 'Chưa trả lời', en: 'Not answered' },
     answered: { vi: 'câu đã trả lời', en: 'questions answered' },
@@ -118,7 +118,8 @@
     });
     var demoBanner = document.getElementById('demoBanner');
     if (API.demo) { demoBanner.hidden = false; demoBanner.textContent = t(UI.demo); }
-    if (rerender && S.Q) { var y = window.scrollY; render(); window.scrollTo(0, y); writeLocal(); }
+    if (rerender && S.noticeKind) { renderNotice(S.noticeKind); return; }
+    if (rerender && S.Q && S.session) { var y = window.scrollY; render({ still: true }); window.scrollTo(0, y); writeLocal(); }
   }
   document.querySelectorAll('[data-set-lang]').forEach(function (b) {
     b.addEventListener('click', function () { setLang(b.getAttribute('data-set-lang'), true); });
@@ -214,7 +215,7 @@
   function flagMissing(miss) {
     S.invalid = {};
     miss.forEach(function (m) { S.invalid[m.q.id] = true; });
-    render();
+    render({ still: S.lastRendered === S.step });
     var first = app.querySelector('.q.is-invalid');
     if (first) {
       first.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -263,14 +264,20 @@
   }
 
   /* ---------------- hiển thị ---------------- */
-  function render() {
+  function render(opts) {
     var step = S.step, n = sections().length;
-    var html;
-    if (step < 0) html = renderWelcome();
-    else if (step <= n - 1) html = renderSection(step);
-    else if (step === n) html = renderReview();
-    else html = renderThanks();
-    app.innerHTML = '<div class="screen">' + html + '</div>';
+    var html, kind;
+    if (step < 0) { html = renderWelcome(); kind = 'welcome'; }
+    else if (step <= n - 1) { html = renderSection(step); kind = 'section'; }
+    else if (step === n) { html = renderReview(); kind = 'review'; }
+    else { html = renderThanks(); kind = 'thanks'; }
+    var dir = S.lastRendered == null || (opts && opts.still) ? '' : step > S.lastRendered ? ' is-fwd' : step < S.lastRendered ? ' is-back' : '';
+    var still = opts && opts.still;
+    app.innerHTML = '<div class="screen screen--' + kind + (still ? ' is-still' : dir) + '">' + html + '</div>';
+    if (!still) stagger(app.querySelector('.screen'));
+    S.lastRendered = step;
+    document.body.setAttribute('data-screen', kind);
+    petals(kind === 'welcome' ? 'soft' : kind === 'thanks' ? 'burst' : null);
     app.querySelectorAll('textarea.field').forEach(autoGrow);
     progressBar.style.width = (step < 0 ? 0 : Math.min(1, (step + 1) / (n + 1)) * 100) + '%';
     renderNav();
@@ -291,7 +298,8 @@
   function renderWelcome() {
     var I = S.Q.intro;
     var started = Object.keys(S.answers).some(function (k) { return hasValue(S.answers[k]); }) && S.resumeStep > 0;
-    return '<p class="kicker-script">' + txt(I.kicker) + '</p>' +
+    return monogram() +
+      '<p class="kicker-script">' + txt(I.kicker) + '</p>' +
       '<h1 class="display">' + rich(I.title) + '</h1>' +
       '<p class="lead">' + txt(I.greeting) + '</p>' +
       '<p class="body">' + txt(I.body) + '</p>' +
@@ -306,6 +314,7 @@
     var sec = sections()[i], n = sections().length;
     var qs = sec.questions.filter(visible);
     return '<div class="section-head">' +
+      '<span class="section-num" aria-hidden="true">' + ('0' + (i + 1)).slice(-2) + '</span>' +
       '<p class="eyebrow">' + esc(t(UI.part)) + ' ' + ('0' + (i + 1)).slice(-2) + ' / ' + ('0' + n).slice(-2) + '</p>' +
       '<h2 class="title">' + rich(sec.title) + '</h2>' +
       (sec.intro ? '<p class="section-intro">' + txt(sec.intro) + '</p>' : '') +
@@ -339,7 +348,7 @@
           q.options.map(function (o) {
             var on = arr.indexOf(o.value) !== -1;
             return '<button type="button" class="chip' + (on ? ' is-on' : '') + '" data-q="' + q.id + '" data-value="' + esc(o.value) + '" data-multi="' + (multi ? 1 : 0) + '" ' +
-              (multi ? 'aria-pressed="' + on + '"' : 'role="radio" aria-checked="' + on + '"') + '>' + esc(t(o)) + '</button>';
+              (multi ? 'aria-pressed="' + on + '"' : 'role="radio" aria-checked="' + on + '"') + '><span class="chip__tick" aria-hidden="true"></span>' + esc(t(o)) + '</button>';
           }).join('') + '</div>';
         label = label.replace('<label class="q__text" for="f_' + q.id + '"', '<span class="q__text" id="f_' + q.id + '"').replace('</label></div>', '</span></div>');
         break;
@@ -402,20 +411,27 @@
 
   function renderThanks() {
     var T = S.Q.thanks;
-    return '<div class="thanks"><p class="kicker-script">' + txt(S.Q.intro.kicker) + '</p>' +
+    return '<div class="thanks">' + monogram() + '<p class="kicker-script">' + txt(S.Q.intro.kicker) + '</p>' +
       '<h1 class="display">' + rich(T.title) + '</h1>' +
       '<div class="ornament"></div>' +
       '<p class="body">' + txt(T.body) + '</p>' +
-      '<p class="signature">' + esc(T.signature) + '</p>' +
+      '<p class="signature"><span>' + esc(T.signature) + '</span></p>' +
       '<button type="button" class="btn btn--outline" data-action="goto" data-step="' + reviewIndex() + '">' + txt(T.edit) + '</button></div>';
   }
 
   function renderNotice(kind) {
+    S.noticeKind = kind;
     nav.hidden = true;
     var html;
     if (kind === 'network') {
       html = '<h1 class="title">' + esc(t(UI.netTitle)) + '</h1><p class="body">' + esc(t(UI.netBody)) + '</p>' +
         '<div class="actions"><button type="button" class="btn btn--solid" onclick="location.reload()">' + esc(t(UI.retry)) + '</button></div>';
+    } else if (kind === 'landing' && S.Q && S.Q.landing) {
+      html = '<p class="kicker-script">Thiên Ân</p><h1 class="display">' + rich(S.Q.landing.title) + '</h1>' +
+        '<div class="ornament"></div><p class="body">' + txt(S.Q.landing.body) + '</p>' +
+        (API.demo ? '<div class="actions">' +
+          '<a class="btn btn--solid" href="/lovestory/demobride00001">' + esc(t(UI.demoBride)) + '</a>' +
+          '<a class="btn btn--outline" href="/lovestory/demogroom00001">' + esc(t(UI.demoGroom)) + '</a></div>' : '');
     } else {
       html = '<p class="kicker-script">Love Story</p><h1 class="title">' + esc(t(UI.badLinkTitle)) + '</h1>' +
         '<p class="body">' + esc(t(UI.badLinkBody)) + '</p>' +
@@ -424,6 +440,56 @@
           '<a class="btn btn--outline" href="/lovestory/demogroom00001">' + esc(t(UI.demoGroom)) + '</a></div>' : '');
     }
     app.innerHTML = '<div class="screen notice">' + html + '</div>';
+    stagger(app.querySelector('.screen'));
+    petals(kind === 'landing' ? 'soft' : null);
+  }
+
+  /* ---------------- hiệu ứng ---------------- */
+  function monogram() {
+    if (!S.session) return '';
+    var d = (S.answers.q1_7 || (S.session.couple || {}).weddingDate || '').split('-');
+    var date = d.length === 3 ? d[2] + ' · ' + d[1] + ' · ' + d[0] : '';
+    return '<div class="monogram" aria-hidden="true"><span class="monogram__names">' + esc(S.session.selfName) +
+      '<em>&amp;</em>' + esc(S.session.partnerName) + '</span>' + (date ? '<span class="monogram__date">' + esc(date) + '</span>' : '') + '</div>';
+  }
+
+  function stagger(screen) {
+    if (!screen) return;
+    var items = [];
+    Array.prototype.forEach.call(screen.children, function (el) {
+      if (el.classList.contains('questions') || el.tagName === 'DL') Array.prototype.push.apply(items, el.children);
+      else if (el.classList.contains('thanks')) Array.prototype.push.apply(items, el.children);
+      else items.push(el);
+    });
+    items.forEach(function (el, i) {
+      el.classList.add('reveal');
+      el.style.animationDelay = Math.min(i, 10) * 70 + 'ms';
+    });
+  }
+
+  var petalLayer = null, petalMode = null;
+  function petals(mode) {
+    if (mode === petalMode) return;
+    petalMode = mode;
+    if (petalLayer) { petalLayer.remove(); petalLayer = null; }
+    if (!mode || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    petalLayer = document.createElement('div');
+    petalLayer.className = 'petals petals--' + mode;
+    petalLayer.setAttribute('aria-hidden', 'true');
+    var count = mode === 'burst' ? 26 : 12;
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement('span');
+      var size = 8 + Math.random() * 12;
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.width = size + 'px';
+      p.style.height = (size * 0.72) + 'px';
+      p.style.animationDuration = (mode === 'burst' ? 5 + Math.random() * 4 : 11 + Math.random() * 9) + 's, ' + (2.5 + Math.random() * 2.5) + 's';
+      p.style.animationDelay = (mode === 'burst' ? Math.random() * 1.6 : Math.random() * -18) + 's, 0s';
+      p.style.opacity = (0.35 + Math.random() * 0.45).toFixed(2);
+      if (Math.random() < 0.35) p.className = 'is-gold';
+      petalLayer.appendChild(p);
+    }
+    document.body.appendChild(petalLayer);
   }
 
   /* ---------------- sự kiện trong form ---------------- */
@@ -458,7 +524,7 @@
         onEdit(id, S.answers[id] === val ? '' : val);
       }
       var y = window.scrollY;
-      render();
+      render({ still: true });
       window.scrollTo(0, y);
       return;
     }
@@ -484,7 +550,12 @@
     var urlLang = params.get('lang');
     setLang(urlLang || (local && local.lang) || 'vi', false);
 
-    if (!S.k) { renderNotice('badlink'); return; }
+    if (!S.k) {
+      fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+        .then(function (q) { S.Q = q; renderNotice('landing'); })
+        .catch(function () { renderNotice('badlink'); });
+      return;
+    }
 
     Promise.all([
       fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }),

@@ -211,3 +211,139 @@ input[type="date"].field, input[type="month"].field { min-height: 46px; max-widt
   .nav__inner { padding: 10px 16px; }
   .btn--solid { padding: 0 18px; }
 }
+
+/* =====================================================================
+ * Nâng cấp hiệu ứng & giao diện
+ * ===================================================================== */
+
+/* Nền: quầng sáng hồng phấn & champagne rất nhẹ */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60vw 50vh at 100% 0%, rgba(227, 169, 171, 0.14), transparent 70%),
+    radial-gradient(50vw 40vh at 0% 100%, rgba(181, 121, 74, 0.08), transparent 70%);
+  transition: opacity 1s;
+}
+body[data-screen="section"]::before, body[data-screen="review"]::before { opacity: .45; }
+
+/* Xuất hiện lần lượt */
+.screen { animation: none; }
+.reveal { animation: reveal .85s cubic-bezier(.16, .84, .32, 1) both; }
+.screen.is-fwd .reveal { animation-name: revealFwd; }
+.screen.is-back .reveal { animation-name: revealBack; }
+.screen.is-still .reveal, .is-still > * { animation: none !important; }
+@keyframes reveal { from { opacity: 0; transform: translateY(18px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes revealFwd { from { opacity: 0; transform: translateX(26px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes revealBack { from { opacity: 0; transform: translateX(-26px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* Monogram tên cặp đôi */
+.monogram {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 16px 26px 14px; margin: 0 0 34px; position: relative;
+  border: 1px solid rgba(181, 121, 74, .35); border-radius: 999px 999px 4px 4px;
+  background: rgba(255, 255, 255, .7);
+}
+.monogram::after {
+  content: ""; position: absolute; inset: 5px; border: 1px solid rgba(181, 121, 74, .15);
+  border-radius: 999px 999px 2px 2px; pointer-events: none;
+}
+.monogram__names { font: 500 22px/1.2 var(--serif); letter-spacing: .02em; white-space: nowrap; }
+.monogram__names em { font-style: italic; color: var(--champagne); margin: 0 10px; font-size: 1.1em; }
+.monogram__date { font: 500 10.5px/1 var(--caps); letter-spacing: .32em; color: var(--muted); }
+.thanks .monogram { margin-bottom: 28px; }
+
+/* Số phần lớn, mờ phía sau tiêu đề */
+.section-head { position: relative; }
+.section-num {
+  position: absolute; right: -6px; top: -26px; z-index: -1;
+  font: italic 500 clamp(110px, 26vw, 170px)/1 var(--serif);
+  color: transparent; -webkit-text-stroke: 1px rgba(181, 121, 74, .28);
+  letter-spacing: -0.04em; user-select: none;
+}
+
+/* Ô nhập: đường gạch dưới chạy màu khi chạm vào */
+.field {
+  background-image: linear-gradient(var(--champagne), var(--champagne));
+  background-repeat: no-repeat; background-position: 0 100%; background-size: 0% 1px;
+  transition: background-size .5s cubic-bezier(.2, .7, .2, 1), border-color .3s, box-shadow .3s, background-color .3s;
+}
+.field:focus { background-size: 100% 1px; border-bottom-color: var(--line); }
+textarea.field { background-image: none; }
+textarea.field:focus { box-shadow: 0 0 0 4px var(--blush-soft); }
+.q { transition: opacity .3s; }
+.q__num { transition: transform .4s cubic-bezier(.2, .7, .2, 1), color .3s; display: inline-block; }
+.q:focus-within .q__num { transform: translateX(4px); color: var(--ink); }
+
+/* Lựa chọn có dấu tích */
+.chip { display: inline-flex; align-items: center; gap: 0; transition: background .25s, color .25s, border-color .25s, transform .15s, gap .25s; }
+.chip:active { transform: scale(.97); }
+.chip__tick {
+  width: 0; height: 9px; overflow: hidden; display: inline-block; flex: none;
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px); opacity: 0;
+  transition: width .25s, opacity .25s, margin .25s;
+}
+.chip.is-on { gap: 8px; }
+.chip.is-on .chip__tick { width: 5px; opacity: 1; margin-left: 2px; }
+
+/* Nút: mũi tên & ánh sáng lướt qua */
+.btn--solid { position: relative; overflow: hidden; }
+.btn--solid::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .22), transparent);
+  transform: skewX(-18deg); transition: left .7s cubic-bezier(.2, .7, .2, 1);
+}
+.btn--solid:hover::after { left: 120%; }
+.btn--solid[data-action="start"] { min-height: 56px; letter-spacing: .24em; }
+
+/* Đường kẻ trang trí */
+.ornament { position: relative; width: 120px; background: none; height: 12px; }
+.ornament::before, .ornament::after {
+  content: ""; position: absolute; top: 50%; width: 48px; height: 1px; background: var(--champagne);
+}
+.ornament::before { left: 0; } .ornament::after { right: 0; }
+.ornament { background: radial-gradient(circle, var(--champagne) 2.5px, transparent 3px) center / 12px 12px no-repeat; }
+
+/* Chữ ký "viết tay" */
+.signature span {
+  display: inline-block; clip-path: inset(0 100% 0 0);
+  animation: write 2.2s .9s cubic-bezier(.6, .05, .3, 1) forwards;
+}
+@keyframes write { to { clip-path: inset(0 -10% 0 0); } }
+
+/* Trang chào khi không có tên trong link */
+.notice .display { margin-top: 6px; }
+.notice .ornament { margin: 6px auto 22px; }
+.notice .body { max-width: 520px; margin-left: auto; margin-right: auto; }
+
+/* Cánh hoa rơi */
+.petals { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.petals span {
+  position: absolute; top: -40px; display: block;
+  background: linear-gradient(135deg, #f3c9ca, var(--blush));
+  border-radius: 150% 0 150% 0;
+  animation-name: petalFall, petalSway; animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite; animation-direction: normal, alternate;
+}
+.petals span.is-gold { background: linear-gradient(135deg, #e6c3a3, var(--champagne)); }
+.petals--burst span { animation-iteration-count: 1, infinite; animation-fill-mode: forwards, none; }
+@keyframes petalFall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(calc(100vh + 80px)) rotate(540deg); }
+}
+@keyframes petalSway { from { margin-left: -24px; } to { margin-left: 24px; } }
+.app, .topbar, .nav { position: relative; z-index: 1; }
+.topbar { position: sticky; }
+.nav { position: fixed; }
+
+/* Màn xem lại: mỗi phần thành một thẻ nhẹ */
+.review-sec { border-top: 0; background: rgba(246, 245, 242, .7); border-radius: var(--radius); padding: 20px 20px 10px; margin-top: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .signature span { animation: none !important; clip-path: none !important; }
+  .field, .chip, .chip__tick, .q__num { transition: none; }
+}
+@media (max-width: 520px) {
+  .monogram__names { font-size: 19px; }
+  .section-num { top: -14px; }
+}
