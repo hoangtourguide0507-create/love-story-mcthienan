@@ -39,6 +39,7 @@
     function save(db) { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
     function rid(n) { var c = 'abcdefghijkmnpqrstuvwxyz23456789', s = ''; for (var i = 0; i < n; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
     function slug(s) { return (String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 12)) || 'x'; }
+    function pkey(n) { var b = String(n).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, ''); return (b ? b + '-' : '') + rid(8); }
     function purge(date) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || ''); if (!m) return ''; return new Date(Date.UTC(+m[1], +m[2] - 1 + 6, +m[3])).toISOString().slice(0, 10); }
     function pub(c) { var o = JSON.parse(JSON.stringify(c)); o.purgeDate = purge(c.weddingDate); return o; }
     function byKey(db, k) {
@@ -95,7 +96,7 @@
           var nc = {
             code: slug(d.brideName) + '-' + slug(d.groomName) + '-' + rid(4), brideName: d.brideName.trim(), groomName: d.groomName.trim(),
             weddingDate: d.weddingDate, venue: (d.venue || '').trim(), note: (d.note || '').trim(),
-            brideKey: rid(14), groomKey: rid(14), brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
+            brideKey: pkey(d.brideName), groomKey: pkey(d.groomName), brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
           };
           db.couples.push(nc); save(db);
           return { ok: true, couple: pub(nc) };

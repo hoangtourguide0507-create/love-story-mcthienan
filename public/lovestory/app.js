@@ -46,8 +46,10 @@
   };
 
   var params = new URLSearchParams(location.search);
+  // Link dạng /lovestory/lan-anh-k7q2m9xp (mới) hoặc /lovestory/?k=... (cũ)
+  var pathKey = (location.pathname.match(/\/lovestory\/([a-z0-9-]{8,40})\/?$/i) || [])[1] || '';
   var S = {
-    k: (params.get('k') || '').trim(),
+    k: (pathKey || params.get('k') || '').trim().toLowerCase(),
     lang: 'vi',
     Q: null,
     session: null,
@@ -418,8 +420,8 @@
       html = '<p class="kicker-script">Love Story</p><h1 class="title">' + esc(t(UI.badLinkTitle)) + '</h1>' +
         '<p class="body">' + esc(t(UI.badLinkBody)) + '</p>' +
         (API.demo ? '<div class="actions">' +
-          '<a class="btn btn--solid" href="?k=demobride00001">' + esc(t(UI.demoBride)) + '</a>' +
-          '<a class="btn btn--outline" href="?k=demogroom00001">' + esc(t(UI.demoGroom)) + '</a></div>' : '');
+          '<a class="btn btn--solid" href="/lovestory/demobride00001">' + esc(t(UI.demoBride)) + '</a>' +
+          '<a class="btn btn--outline" href="/lovestory/demogroom00001">' + esc(t(UI.demoGroom)) + '</a></div>' : '');
     }
     app.innerHTML = '<div class="screen notice">' + html + '</div>';
   }

@@ -230,7 +230,7 @@ function apiAdminCreate_(req) {
     var c = {
       code: code, brideName: bride, groomName: groom, weddingDate: date,
       venue: clean_(d.venue, 200), note: clean_(d.note, 1000),
-      brideKey: randomId_(14), groomKey: randomId_(14),
+      brideKey: personKey_(bride), groomKey: personKey_(groom),
       brideStatus: 'new', groomStatus: 'new', createdAt: now, updatedAt: now
     };
     sheet_(SHEET_COUPLES).appendRow(COUPLE_HEADERS.map(function (h) { return safeCell_(c[h]); }));
@@ -359,7 +359,7 @@ function readCouples_() {
 
 function findByKey_(k) {
   k = String(k || '');
-  if (!/^[a-z0-9]{10,32}$/.test(k)) return null;
+  if (!/^[a-z0-9-]{8,40}$/.test(k)) return null;
   var couples = readCouples_();
   for (var i = 0; i < couples.length; i++) {
     if (couples[i].brideKey === k) return { couple: couples[i], role: 'bride', row: couples[i].row };
@@ -416,6 +416,14 @@ function slug_(s) {
   var t = String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 12);
   return t || 'x';
+}
+
+// Mã link riêng của từng người: tên không dấu + 8 ký tự ngẫu nhiên, ví dụ "lan-anh-k7q2m9xp"
+function personKey_(name) {
+  var base = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 16).replace(/-+$/, '');
+  return (base ? base + '-' : '') + randomId_(8);
 }
 
 function randomId_(len) {

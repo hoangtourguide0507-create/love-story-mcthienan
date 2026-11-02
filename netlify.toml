@@ -6,6 +6,12 @@
   to = "/lovestory/"
   status = 302
 
+# Link riêng của dâu rể: /lovestory/<mã> → trang form (file có thật như admin/, style.css vẫn được ưu tiên)
+[[redirects]]
+  from = "/lovestory/*"
+  to = "/lovestory/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

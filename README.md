@@ -2,7 +2,7 @@
 
 Trang web để cô dâu và chú rể kể câu chuyện tình yêu của mình. MC Thiên Ân dùng những chia sẻ này để viết phần Love Story trong kịch bản đám cưới. Trang thay cho Google Form "Kể với Thiên Ân câu chuyện tình yêu của hai bạn".
 
-- **Form cho dâu rể:** `https://mc-thien-an.netlify.app/lovestory/?k=…` Mỗi người có một link riêng.
+- **Form cho dâu rể:** `https://mc-thien-an.netlify.app/lovestory/<tên>-<mã>` Mỗi người có một link riêng.
 - **Trang quản trị:** `https://mc-thien-an.netlify.app/lovestory/admin/`
 - **Dữ liệu:** lưu trong Google Sheet của Thiên Ân thông qua Google Apps Script, tự xoá 6 tháng sau ngày cưới.
 

@@ -48,7 +48,7 @@
     return Math.round((new Date(+m[1], +m[2] - 1, +m[3]) - t) / 86400000);
   }
   function formBase() { return location.origin + '/lovestory/'; }
-  function link(key) { return formBase() + '?k=' + key; }
+  function link(key) { return formBase() + key; }
   function hasValue(v) {
     if (Array.isArray(v)) return v.some(function (x) { return String(x || '').trim(); });
     return v != null && String(v).trim() !== '';
@@ -320,7 +320,7 @@
   function message(c, role, lang) {
     var self = role === 'bride' ? c.brideName : c.groomName;
     var partner = role === 'bride' ? c.groomName : c.brideName;
-    var url = link(role === 'bride' ? c.brideKey : c.groomKey) + (lang === 'en' ? '&lang=en' : '');
+    var url = link(role === 'bride' ? c.brideKey : c.groomKey) + (lang === 'en' ? '?lang=en' : '');
     if (lang === 'en') {
       return 'Hi ' + self + ' 💛\n' +
         "This is Thiên Ân. Here's your link to share your love story, so I can prepare the Love Story moment for your wedding on " + fmtDate(c.weddingDate) + '.\n\n' +

@@ -33,7 +33,12 @@ Có 3 phần, làm theo thứ tự. Tổng cộng khoảng 20 phút.
    - Bấm **Triển khai**, sau đó copy **URL ứng dụng web**. Link có dạng `https://script.google.com/macros/s/……/exec`.
 7. Gửi URL này cho Claude để gắn vào trang. Hoặc tự sửa file `public/lovestory/config.js`: dán URL vào giữa hai dấu ngoặc kép ở dòng `apiUrl: ""`.
 
-> **Khi sửa `Code.gs` về sau:** bấm **Triển khai → Quản lý các bản triển khai**, bấm biểu tượng bút chì, chọn **Phiên bản → Phiên bản mới**, rồi bấm **Triển khai**. Làm như vậy URL được giữ nguyên.
+> **Khi cập nhật `Code.gs` về sau** (ví dụ khi Claude báo có bản mới):
+> 1. Mở Apps Script, xoá hết code cũ, dán toàn bộ `apps-script/Code.gs` mới vào và bấm 💾 để lưu.
+> 2. Bấm **Triển khai → Quản lý các bản triển khai**, bấm biểu tượng bút chì.
+> 3. Ở mục **Phiên bản**, chọn **Phiên bản mới**, rồi bấm **Triển khai**.
+>
+> Làm như vậy URL được giữ nguyên, không cần sửa `config.js`. Nếu bấm "Tùy chọn triển khai mới" thay vì "Quản lý các bản triển khai", Google sẽ tạo URL khác.
 
 ---
 
@@ -98,4 +103,8 @@ Toàn bộ câu hỏi nằm trong `public/lovestory/questions.json`. Khi sửa:
 Khi `apiUrl` trong `config.js` còn để trống, trang chạy ở chế độ xem thử. Dữ liệu chỉ lưu trên trình duyệt đang mở, không gửi đi đâu.
 
 - Mật khẩu trang quản trị khi xem thử: `demo`.
-- Link mẫu: `/lovestory/?k=demobride00001` (cô dâu) và `/lovestory/?k=demogroom00001` (chú rể).
+- Link mẫu: `/lovestory/demobride00001` (cô dâu) và `/lovestory/demogroom00001` (chú rể).
+
+## Dạng link mời
+
+Mỗi người có một link riêng dạng `https://mc-thien-an.netlify.app/lovestory/lan-anh-k7q2m9xp`. Phần đầu là tên người nhận viết không dấu, phần cuối là 8 ký tự ngẫu nhiên để người ngoài không đoán được. Link dạng cũ `…/lovestory/?k=…` vẫn mở được bình thường.
