@@ -485,7 +485,7 @@
     if (!S.k) { renderNotice('badlink'); return; }
 
     Promise.all([
-      fetch('questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }),
+      fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }),
       API.call({ action: 'session', k: S.k })
     ]).then(function (res) {
       S.Q = res[0];

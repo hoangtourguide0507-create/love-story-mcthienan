@@ -47,7 +47,7 @@
     var t = new Date(); t.setHours(0, 0, 0, 0);
     return Math.round((new Date(+m[1], +m[2] - 1, +m[3]) - t) / 86400000);
   }
-  function formBase() { return new URL('../', location.href).href.split('#')[0].split('?')[0]; }
+  function formBase() { return location.origin + '/lovestory/'; }
   function link(key) { return formBase() + '?k=' + key; }
   function hasValue(v) {
     if (Array.isArray(v)) return v.some(function (x) { return String(x || '').trim(); });
@@ -84,7 +84,7 @@
 
   function loadQuestions() {
     if (A.Q) return Promise.resolve(A.Q);
-    return fetch('../questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
+    return fetch('/lovestory/questions.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
       .then(function (q) { A.Q = q; return q; });
   }
 

@@ -51,14 +51,13 @@ Từ giờ, mỗi lần có code mới đẩy lên GitHub, Netlify tự cập nh
 ## C. Gắn vào web portfolio
 
 1. Trong **thư mục web portfolio** (thư mục chứa `index.html`, `editor.html`, `content.json`), tạo một file tên **`_redirects`**. Lưu ý: file không có đuôi `.txt`.
-2. Dán 2 dòng sau vào file:
+2. Dán đúng 1 dòng sau vào file:
 
    ```
-   /lovestory    /lovestory/    301
    /lovestory/*  https://love-story-mcthienan.netlify.app/lovestory/:splat  200
    ```
 
-   Nếu thư mục đã có sẵn file `_redirects`, chỉ cần thêm 2 dòng này vào **đầu** file.
+   Nếu thư mục đã có sẵn file `_redirects`, chỉ cần thêm dòng này vào **đầu** file.
 3. Kéo thả lại cả thư mục portfolio lên Netlify như bình thường.
 4. Mở thử 2 link sau để kiểm tra:
    - `https://mc-thien-an.netlify.app/lovestory/admin/` (trang quản trị)
