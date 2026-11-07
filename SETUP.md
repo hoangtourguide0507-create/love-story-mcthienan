@@ -82,6 +82,22 @@ Từ giờ, mỗi lần có code mới đẩy lên GitHub, Netlify tự cập nh
 
 ---
 
+## E. Nối với app MC Thiên Ân (thông báo + xem câu trả lời trong app)
+
+App MC Thiên Ân (Khác → **Love Story**, và thẻ **💌 Love Story** trong mỗi job cưới) dùng chung Apps Script này: tạo link mời, xem trạng thái, đọc câu trả lời và đổ câu trả lời thành kịch bản. Lần đầu app hỏi mật khẩu quản trị (`ADMIN_PASSWORD`), mỗi máy nhập một lần.
+
+Để điện thoại nhận **thông báo đẩy** mỗi khi dâu rể bấm Gửi:
+
+1. Trong app: **Khác → Love Story → Cài đặt Love Story → Thông báo khi dâu rể gửi → Copy link**.
+2. Mở Apps Script, dán **toàn bộ** `apps-script/Code.gs` mới (bản có hàm `pushSubmit_`) rồi bấm 💾.
+3. **Cài đặt dự án → Thuộc tính tập lệnh → Thêm thuộc tính**: tên `PUSH_URL`, giá trị là link vừa copy. Lưu.
+4. **Triển khai → Quản lý các bản triển khai** → bút chì → **Phiên bản mới** → **Triển khai** (giữ nguyên URL).
+5. Chạy thử: ở thanh trên chọn hàm **`testPush`** → **Chạy** (lần đầu Google hỏi thêm quyền "kết nối dịch vụ bên ngoài", bấm Cho phép). Điện thoại có thông báo mẫu là xong.
+
+Email thông báo vẫn giữ như cũ.
+
+---
+
 ## Vận hành hằng ngày
 
 1. Chốt hợp đồng với cặp đôi, vào trang quản trị bấm **+ Cặp mới**.

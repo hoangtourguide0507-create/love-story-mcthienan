@@ -8,6 +8,8 @@
  *   ADMIN_PASSWORD  (bắt buộc)  mật khẩu trang quản trị
  *   NOTIFY_EMAIL    (tuỳ chọn)  email nhận thông báo; mặc định là email chủ Sheet
  *   ADMIN_URL       (tuỳ chọn)  link trang quản trị, chèn vào email thông báo
+ *   PUSH_URL        (tuỳ chọn)  link báo tin của app MC Thiên Ân (app → Khác → Love Story → Cài đặt → Copy link).
+ *                               Có link này thì mỗi lần dâu rể bấm Gửi, điện thoại nhận thông báo đẩy.
  */
 
 var SHEET_COUPLES = 'Couples';
@@ -147,6 +149,7 @@ function saveAnswers_(req, isSubmit) {
   });
   if (isSubmit) {
     try { notifySubmit_(found, answers); } catch (err) { Logger.log('Email lỗi: ' + err); }
+    try { pushSubmit_(found); } catch (err) { Logger.log('Thông báo app lỗi: ' + err); }
   }
   return result;
 }
@@ -342,6 +345,32 @@ function notifySubmit_(found, answers) {
     (adminUrl ? '<p><a href="' + esc_(adminUrl) + '" style="color:#b5794a">Mở trang quản trị</a></p>' : '') +
     '</div>';
   MailApp.sendEmail({ to: to, subject: subject, htmlBody: html, name: 'Love Story · Thiên Ân' });
+}
+
+/* Thông báo đẩy về app MC Thiên Ân (qua máy chủ Cloudflare của app) */
+function pushSubmit_(found) {
+  var url = getProp_('PUSH_URL');
+  if (!url) return;
+  var c = found.couple;
+  var who = found.role === 'bride' ? 'Cô dâu ' + c.brideName : 'Chú rể ' + c.groomName;
+  var other = found.role === 'bride' ? c.groomStatus : c.brideStatus;
+  UrlFetchApp.fetch(url, {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({
+      title: '💌 ' + who + ' đã gửi Love Story',
+      body: c.brideName + ' & ' + c.groomName + ' · cưới ' + c.weddingDate + ' · người còn lại ' + (other === 'submitted' ? 'đã gửi ✅' : 'chưa gửi'),
+      code: c.code
+    })
+  });
+}
+
+// Chạy thử trong trình soạn Apps Script: chọn hàm testPush rồi bấm Chạy — điện thoại sẽ nhận một thông báo mẫu.
+function testPush() {
+  var url = getProp_('PUSH_URL');
+  if (!url) throw new Error('Chưa đặt PUSH_URL trong Thuộc tính tập lệnh');
+  var r = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({ title: '💌 Thử thông báo Love Story', body: 'Nếu thấy dòng này trên điện thoại là đã nối xong.', code: '' }) });
+  Logger.log(r.getResponseCode() + ' ' + r.getContentText());
 }
 
 /* ============================================================
